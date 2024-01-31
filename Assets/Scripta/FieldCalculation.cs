@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class FieldCalculation : MonoBehaviour
@@ -15,54 +16,51 @@ public class FieldCalculation : MonoBehaviour
     {
         
     }
-    public static (int,int,int)[] CirclePattern((int, int, int) start)
+    public static ArrayList CirclePattern((int, int, int) start)
     {
-        (int, int, int)[] fields = new (int, int, int)[20];
-        int[] coords = new int[3] { start.Item1, start.Item2, start.Item3 };
-        (int, int, int) currentField = (0, 0, 0);
-        int[] tempCalc = new int[] { start.Item1, start.Item2, start.Item3 };
-        bool negative = true;
-        (int,int) maxValue = (Mathf.Abs(start.Item1),0);
-        fields[0] = start;
-        for (int i = 0; i < coords.Length; i++)
+        ArrayList fieldsToSpawn = new ArrayList();
+        int[] fieldCoords = new int[3] {start.Item1,start.Item2,start.Item3};
+        int[] startCoords = new int[3];
+        bool negative = fieldCoords[2] < 0 ? true : false;
+        bool startsWithZero = false;
+        (int,int) indexToStart = (Mathf.Abs(start.Item1),0);
+        for (int i = 0; i < fieldCoords.Length; i++)
         {
-            maxValue = maxValue.Item1 < Mathf.Abs(coords[i]) ? (Mathf.Abs(coords[i]),i) : maxValue;
-            if(coords[i] == 0)
+            if (Mathf.Abs(fieldCoords[i]) > Mathf.Abs(indexToStart.Item1))
             {
-                
-                for(int j=i, indexOut = 0; indexOut < 20 ;j++, indexOut++)
-                {
-                    
-                    tempCalc[j % 3] = negative ? 1 : -1;
-                    tempCalc[(j - 1 + 3) % 3] = negative ? -1 : +1;
-                    currentField = (tempCalc[0], tempCalc[1], tempCalc[2]);
-                    fields[indexOut] = currentField;
-                    negative = Mathf.Sign(coords[(j + 1) % 3]) < 0;
-                    /*for (; !(tempCalc[(j-1+3)%3] == 0) ;) { 
-                        tempCalc[j%3] = negative ? 1:-1;
-                        tempCalc[(j-1+3)%3] = negative ? -1:+1;
-                        currentField = (tempCalc[0], tempCalc[1], tempCalc[2]);
-                        fields[indexOut] = currentField;
-                        Debug.Log(currentField);
-                        Debug.Log(start);
-                    }*/
-                }
-                return fields;
+                indexToStart = (Mathf.Abs(fieldCoords[i]), i);
             }
-
+            if (fieldCoords[i] == 0)
+            {
+                startsWithZero = true;
+            }
         }
-        /*for (int j = maxValue.Item2, indexOut=0; !currentField.Equals(start); j++,indexOut++)
+        if (!startsWithZero) 
         {
-            negative = Mathf.Sign(coords[(j + 1) % 3]) < 0;
-            for (; !(tempCalc[(j + 1) % 3] == 0);)
+            negative = (indexToStart.Item1 + 1) % 3 < 0 ? true : false;
+            for (; fieldCoords[(indexToStart.Item2+1) % 3] != 0;)
             {
-                tempCalc[(j+1) % 3] = negative ? 1 : -1;
-                tempCalc[(j+2) % 3] = negative ? -1 : +1;
-                currentField = (tempCalc[0], tempCalc[1], tempCalc[2]);
-                fields[indexOut] = currentField;
+                fieldsToSpawn.Add((fieldCoords[0], fieldCoords[1], fieldCoords[2]));
+                fieldCoords[(indexToStart.Item2+1) % 3] += negative ? 1 : -1;
+                fieldCoords[(indexToStart.Item2 + 2) % 3] += negative ? -1 : 1;
             }
-        }*/
-        return fields;
+        }
+        for (int i = 0; !fieldCoords.SequenceEqual(startCoords); i+=2)
+        {
+            startCoords = new int[3] { start.Item1, start.Item2, start.Item3 };
+            negative = fieldCoords[(i - 1 + 3) % 3] < 0 ? true : false;
+            for (; fieldCoords[(i + 2) % 3] != 0;)
+            {
+                fieldsToSpawn.Add((fieldCoords[0], fieldCoords[1], fieldCoords[2]));
+                fieldCoords[(i) % 3] += negative ? -1 : 1;
+                fieldCoords[(i + 2) % 3] += negative ? 1 : -1;
+                if (fieldCoords.SequenceEqual(startCoords))
+                {
+                    break;
+                }
+            }
+        }
+        return fieldsToSpawn;
 
     }
     public static void SpiralPattern((int, int, int) start)
