@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class FieldCalculation : MonoBehaviour
 {
@@ -20,51 +23,66 @@ public class FieldCalculation : MonoBehaviour
     {
         ArrayList fieldsToSpawn = new ArrayList();
         int[] fieldCoords = new int[3] {start.Item1,start.Item2,start.Item3};
-        int[] startCoords = new int[3];
-        bool negative = fieldCoords[2] < 0 ? true : false;
-        bool startsWithZero = false;
-        (int,int) indexToStart = (Mathf.Abs(start.Item1),0);
-        for (int i = 0; i < fieldCoords.Length; i++)
+        fieldsToSpawn.Add((fieldCoords[0], fieldCoords[1], fieldCoords[2]));
+        if(fieldCoords.SequenceEqual(new int[3] { 0, 0, 0 }))
         {
-            if (Mathf.Abs(fieldCoords[i]) > Mathf.Abs(indexToStart.Item1))
-            {
-                indexToStart = (Mathf.Abs(fieldCoords[i]), i);
-            }
-            if (fieldCoords[i] == 0)
-            {
-                startsWithZero = true;
-            }
+            return fieldsToSpawn;
         }
-        if (!startsWithZero) 
+        int pointer = 0;
+        if (!fieldCoords.Contains(0))
         {
-            negative = (indexToStart.Item1 + 1) % 3 < 0 ? true : false;
-            for (; fieldCoords[(indexToStart.Item2+1) % 3] != 0;)
+            int largest = 0;
+            for(int index = 0; index < 3; index++)
             {
-                fieldsToSpawn.Add((fieldCoords[0], fieldCoords[1], fieldCoords[2]));
-                fieldCoords[(indexToStart.Item2+1) % 3] += negative ? 1 : -1;
-                fieldCoords[(indexToStart.Item2 + 2) % 3] += negative ? -1 : 1;
+                largest = Mathf.Abs(fieldCoords[index]) > Mathf.Abs(fieldCoords[largest]) ? index : largest;
             }
+            for (; fieldCoords[(largest+1)%3] != 0;)
+            {
+                fieldCoords[(largest + 1) % 3] += Math.Sign(fieldCoords[largest] == 1 ? -1 : 1);
+                fieldCoords[(largest + 2) % 3] += Math.Sign(fieldCoords[largest] == 1 ? 1 : -1);
+                fieldsToSpawn.Add((fieldCoords[0], fieldCoords[1], fieldCoords[2]));
+            }
+            pointer = (largest + 2) % 3;
         }
-        for (int i = 0; !fieldCoords.SequenceEqual(startCoords); i+=2)
+        int[] startCoords = new int[3] { start.Item1, start.Item2, start.Item3 };
+        for (int i = 0; true; i+=2)
         {
-            startCoords = new int[3] { start.Item1, start.Item2, start.Item3 };
-            negative = fieldCoords[(i - 1 + 3) % 3] < 0 ? true : false;
-            for (; fieldCoords[(i + 2) % 3] != 0;)
+            for (; fieldCoords[(pointer + 1) % 3] != 0;)
             {
+                fieldCoords[(pointer + 1) % 3] += (Math.Sign(fieldCoords[pointer]) == 1 ? 1 : -1);
+                fieldCoords[(pointer + 2) % 3] += (Math.Sign(fieldCoords[pointer]) == 1 ? -1 : 1);
+                if (fieldCoords.SequenceEqual(startCoords)) break;
                 fieldsToSpawn.Add((fieldCoords[0], fieldCoords[1], fieldCoords[2]));
-                fieldCoords[(i) % 3] += negative ? -1 : 1;
-                fieldCoords[(i + 2) % 3] += negative ? 1 : -1;
-                if (fieldCoords.SequenceEqual(startCoords))
-                {
-                    break;
-                }
             }
+            if (fieldCoords.SequenceEqual(startCoords)) break;
+            pointer = (pointer + 2) % 3;
         }
         return fieldsToSpawn;
 
     }
-    public static void SpiralPattern((int, int, int) start)
+    public static ArrayList SpiralPattern((int, int, int) start)
     {
-
+        ArrayList fieldsToSpawn = new ArrayList();
+        int[] fieldCoords = new int[3] { start.Item1, start.Item2, start.Item3 };
+        fieldsToSpawn.AddRange(CirclePattern(start));
+        int largest = 0;
+        for (int index = 0; index < 3; index++)
+        {
+            largest = Mathf.Abs(fieldCoords[index]) > Mathf.Abs(fieldCoords[largest]) ? index : largest;
+        }
+        while (!fieldCoords.SequenceEqual(new int[3] {0,0,0}))
+        {
+            if(fieldCoords[(largest + 2) % 3] != 0)
+            {
+                fieldCoords[(largest + 2) % 3] += fieldCoords[(largest + 2) % 3] == 1 ? -1 : 1;
+            }
+            else
+            {
+                fieldCoords[(largest + 1) % 3] += fieldCoords[(largest + 2) % 3] == 1 ? -1 : 1;
+            }
+            fieldCoords[largest] -= 1;
+            fieldsToSpawn.AddRange(CirclePattern((fieldCoords[0], fieldCoords[1], fieldCoords[2])));
+        }
+        return fieldsToSpawn;
     }
 }

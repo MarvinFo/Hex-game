@@ -12,7 +12,7 @@ public class WorldController : MonoBehaviour
     void Start()
     {
         fields = worldGeneration.StartWorldGen();
-        
+        DrawCircle((2,-1,-1));
     }
 
     // Update is called once per frame
@@ -30,10 +30,10 @@ public class WorldController : MonoBehaviour
     }
     public static void DrawCircle((int,int,int) startIndex)
     {
-        ArrayList test = FieldCalculation.CirclePattern(startIndex);
+        ArrayList test = FieldCalculation.SpiralPattern(startIndex);
         foreach ((int, int, int) tes in test)
         {
-            fields[tes].IndicateSelected(hoverMaterial);
+           fields[tes].IndicateSelected(hoverMaterial);
         }
     }
 
