@@ -8,17 +8,6 @@ using static UnityEngine.GraphicsBuffer;
 
 public class FieldCalculation : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     public static ArrayList CirclePattern((int, int, int) start)
     {
         ArrayList fieldsToSpawn = new ArrayList();
