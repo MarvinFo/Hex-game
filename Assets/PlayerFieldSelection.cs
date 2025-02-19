@@ -24,7 +24,6 @@ public class PlayerFieldSelection : MonoBehaviour
             if (tileLayer == (tileLayer | (1 << hit.collider.gameObject.layer)))
             {
                 Debug.Log(hit.collider.gameObject.GetComponent<TileController>().GetPositionXY());
-                WorldController.DrawCircle(hit.collider.gameObject.GetComponent<TileController>().GetPositionXY());
             }
         }
     }

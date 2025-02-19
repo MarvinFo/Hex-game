@@ -5,7 +5,9 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     [SerializeField] private GameObject[] players;
+    [SerializeField] private WorldController worldController;
     private Object roundToken;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -19,7 +21,10 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            worldController.GetComponent<WorldController>().RollField(8); 
+        }  
     }
     /*private IEnumerator GameCycle()
     {

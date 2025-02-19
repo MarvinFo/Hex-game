@@ -10,18 +10,20 @@ public class WorldGen : MonoBehaviour
     private Dictionary<(int,int,int), TileController> fields;
     public Material oceanMaterial;
     private int fieldSize;
+    public (int,int,int) startIndex = (2,-2,0);
     public GameObject tile;
     public Vector3 q = new Vector3(0.35f, 0, 0);
     public Vector3 r = new Vector3(-0.5f, 0, -0.5f);
     public Vector3 s = new Vector3(-0.5f, 0, 0.5f);
     private int[] biomes = new int[] { 3, 4, 4, 4, 3, 1 };
+    private static readonly int[] fieldNumbers = { 5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11 };
     private int numberOfTiles;
     [SerializeField] Material[] materials;
     void Start()
     {
         
     }
-    public Dictionary<(int, int, int), TileController> StartWorldGen()
+    public (Dictionary<(int, int, int), TileController>,Dictionary<int,HashSet<TileController>>) StartWorldGen()
     {
         fields = new Dictionary<(int, int, int), TileController>();
         numberOfTiles = worldGenOption.fieldSize;
@@ -54,10 +56,6 @@ public class WorldGen : MonoBehaviour
             }
 
         }
-        foreach ((int, int, int) fiel in fieldsToSpawn)
-        {
-            Debug.Log(fiel);
-        }
         foreach ((int,int,int) fiel in fieldsToSpawn)
         {
             if (Mathf.Sign((q * fiel.Item1).x) == 0)
@@ -75,7 +73,12 @@ public class WorldGen : MonoBehaviour
             }
             else
             {
-                spawnedTile.GetComponent<MeshRenderer>().material = RandomBiomePicker(0);
+                Material material = RandomBiomePicker(0);
+                if (material.name.Equals("Desert"))
+                {
+                    spawnedTile.GetComponent<TileController>().isDesert = true;
+                }
+                spawnedTile.GetComponent<MeshRenderer>().material = material;
             }
             spawnedTile.GetComponent<TileController>().number = (fiel.Item1, fiel.Item2, fiel.Item3);
             fields.Add((fiel.Item1, fiel.Item2, fiel.Item3), spawnedTile.GetComponent<TileController>());
@@ -90,7 +93,8 @@ public class WorldGen : MonoBehaviour
         {
             hex.GenVillageTile();
         }
-        return fields;
+        Dictionary<int, HashSet<TileController>> fieldsWithNumbers = FieldNumberGen();
+        return (fields,fieldsWithNumbers);
     }
     private Material RandomBiomePicker(int recursionLevel)
     {
@@ -105,5 +109,28 @@ public class WorldGen : MonoBehaviour
         }
         biomes[tempRand]--;
         return materials[tempRand];
-    }   
+    }  
+    private Dictionary<int, HashSet<TileController>> FieldNumberGen()
+    {
+        Dictionary<int, HashSet<TileController>> fieldsWithNumbers = new Dictionary<int, HashSet<TileController>>();
+        ArrayList test = FieldCalculation.SpiralPattern(startIndex);
+        int i = 0;
+        foreach ((int, int, int) tes in test)
+        {
+            HashSet<TileController> field = new HashSet<TileController>();
+            if (fields[tes].isDesert) { continue; }
+            fields[tes].SetNumber(fieldNumbers[i]);
+            Debug.Log(i);
+            Debug.Log(tes.ToString());
+            fieldsWithNumbers.Remove(fieldNumbers[i], out field);
+            if(field == null)
+            {
+                field = new HashSet<TileController>();
+            }
+            field.Add(fields[tes]);
+            fieldsWithNumbers.Add(fieldNumbers[i], field);
+            i++;
+        }
+        return fieldsWithNumbers;
+    }
 }

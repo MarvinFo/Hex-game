@@ -11,6 +11,7 @@ public class TileController : GameTileController
     private GameObject[] paths = new GameObject[6];
     public string num;
     private (int, int, int) coordinates;
+    public bool isDesert = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -72,6 +73,10 @@ public class TileController : GameTileController
     public void IndicateSelected(Material hoverMaterial)
     {
         GetComponent<MeshRenderer>().material = hoverMaterial;
+    }
+    public void SetNumber(int number)
+    {
+        transform.Find("numberSpawn").transform.Find("text").GetComponent<TMPro.TextMeshPro>().text = number.ToString();
     }
     
 }
