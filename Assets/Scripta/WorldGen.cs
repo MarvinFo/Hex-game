@@ -12,11 +12,6 @@ public class WorldGen : MonoBehaviour
     private int fieldSize;
     public (int,int,int) startIndex = (2,-2,0);
     public GameObject tile;
-    public Vector3 q = new Vector3(0.35f, 0, 0);
-    public Vector3 r = new Vector3(-0.5f, 0, -0.5f);
-    public Vector3 s = new Vector3(-0.5f, 0, 0.5f);
-    private int[] biomes = new int[] { 3, 4, 4, 4, 3, 1 };
-    private static readonly int[] fieldNumbers = { 5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11 };
     private int numberOfTiles;
     [SerializeField] Material[] materials;
     void Start()
@@ -58,13 +53,13 @@ public class WorldGen : MonoBehaviour
         }
         foreach ((int,int,int) fiel in fieldsToSpawn)
         {
-            if (Mathf.Sign((q * fiel.Item1).x) == 0)
+            if (Mathf.Sign((worldGenOption.q * fiel.Item1).x) == 0)
             {
-                spawnedTile = Instantiate(tile, q * fiel.Item1 - r * fiel.Item2 - s * fiel.Item3, Quaternion.identity);
+                spawnedTile = Instantiate(tile, worldGenOption.q * fiel.Item1 - worldGenOption.r * fiel.Item2 - worldGenOption.s * fiel.Item3, Quaternion.identity);
             }
             else
             {
-                spawnedTile = Instantiate(tile, q * fiel.Item1 + r * fiel.Item2 + s * fiel.Item3, Quaternion.identity);
+                spawnedTile = Instantiate(tile, worldGenOption.q * fiel.Item1 + worldGenOption.r * fiel.Item2 + worldGenOption.s * fiel.Item3, Quaternion.identity);
             }
             if (Mathf.Abs(fiel.Item1) > fieldSize - 1 || Mathf.Abs(fiel.Item2) > fieldSize - 1 || Mathf.Abs(fiel.Item3) > fieldSize - 1)
             {
@@ -98,6 +93,7 @@ public class WorldGen : MonoBehaviour
     }
     private Material RandomBiomePicker(int recursionLevel)
     {
+        int[] biomes = worldGenOption.biomes;
         if (recursionLevel > numberOfTiles )
         {
             return materials[5];
@@ -112,6 +108,7 @@ public class WorldGen : MonoBehaviour
     }  
     private Dictionary<int, HashSet<TileController>> FieldNumberGen()
     {
+        int[] fieldNumbers = worldGenOption.fieldNumbers;
         Dictionary<int, HashSet<TileController>> fieldsWithNumbers = new Dictionary<int, HashSet<TileController>>();
         ArrayList test = FieldCalculation.SpiralPattern(startIndex);
         int i = 0;

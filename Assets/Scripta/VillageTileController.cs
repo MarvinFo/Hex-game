@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 public class VillageTileController : GameTileController
@@ -11,16 +13,18 @@ public class VillageTileController : GameTileController
     // Start is called before the first frame update
     void Start()
     {
-        foreach (Collider col in Physics.OverlapSphere(transform.position, 20f))
+        foreach (Collider col in Physics.OverlapSphere(transform.position, 0.1f))
         {
+            
             int numPath = 0;
-            if(col.gameObject.layer == pathLayer || col.gameObject.layer == tileLayer)
+            if (col.gameObject.layer == pathLayer)
             {
-                col.gameObject.GetComponent<GameTileController>().SetAdhTile(this);
-                if(col.gameObject.layer == pathLayer)
-                {
-                    paths[numPath] = col.gameObject.GetComponent<pathController>();
-                }
+                paths[numPath] = col.gameObject.GetComponent<pathController>();
+            }
+            if (tileLayer == (tileLayer | (1 << col.gameObject.layer)))
+            {
+                col.gameObject.GetComponent<TileController>().AddNotify(this);
+                
             }
         }
     }

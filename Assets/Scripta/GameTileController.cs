@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameTileController : MonoBehaviour
 {
+    // This script is useless thus far
     private VillageTileController[] adhVillageTiles = new VillageTileController[6];
     // Start is called before the first frame update
     void Start()

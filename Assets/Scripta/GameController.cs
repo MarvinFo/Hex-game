@@ -7,6 +7,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject[] players;
     [SerializeField] private WorldController worldController;
     private Object roundToken;
+    public static int playerNumber = 4;
 
     // Start is called before the first frame update
     void Start()
@@ -23,7 +24,7 @@ public class GameController : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Escape))
         {
-            worldController.GetComponent<WorldController>().RollField(8); 
+            //worldController.GetComponent<WorldController>().RollField(8); 
         }  
     }
     /*private IEnumerator GameCycle()

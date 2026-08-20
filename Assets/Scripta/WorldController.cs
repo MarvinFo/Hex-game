@@ -31,15 +31,30 @@ public class WorldController : MonoBehaviour
     {
         
     }
-    public void RollField(int fieldNumber)
+    private TileController[] RollField(int fieldNumber)
     {
         HashSet<TileController> tiles;
         fieldsWithNumbers.TryGetValue(fieldNumber, out tiles);
-        foreach(TileController tileController in tiles)
+        foreach (TileController tileController in tiles)
         {
             tileController.IndicateSelected(hoverMaterial);
         }
+        TileController[] fields = new TileController[tiles.Count];
+        tiles.CopyTo(fields);
+        return fields;
         
+    }
+    public int GetPlayerWithRessource(int number)
+    {
+        TileController[] tiles = RollField(number);
+
+        FieldInfoObject playerFieldInfo = new FieldInfoObject();
+
+        foreach (TileController tileController in tiles)
+        {
+            playerFieldInfo.AddAnalyseTile(tileController);
+        }
+        return 0;
     }
 
 }
