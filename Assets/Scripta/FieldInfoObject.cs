@@ -7,7 +7,7 @@ public class FieldInfoObject
 {
     private Dictionary<int, HashSet<int>> playerValues;
     private int material;
-   public FieldInfoObject()
+    public FieldInfoObject()
     {
         playerValues = new Dictionary<int, HashSet<int>>();
     }

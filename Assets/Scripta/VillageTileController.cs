@@ -10,9 +10,12 @@ public class VillageTileController : GameTileController
     public LayerMask tileLayer;
     public Transform spawn;
     public pathController[] paths = new pathController[3];
-    // Start is called before the first frame update
+    [SerializeField] public int playerID = -1;
+    [SerializeField] private GameObject dwelling;
+    private ResourceManager resourceManager;
     void Start()
     {
+        resourceManager = FindFirstObjectByType<ResourceManager>();
         foreach (Collider col in Physics.OverlapSphere(transform.position, 0.1f))
         {
             
@@ -33,6 +36,17 @@ public class VillageTileController : GameTileController
     void Update()
     {
         
+    }
+    public void AddVillage(int playerID)
+    {
+        this.playerID = playerID;
+    }
+    public void NotifyPicked(GameRessourceMaterials.MaterialEnum material)
+    {
+        if (playerID != -1)
+        {
+            resourceManager.AwardAssets(playerID);
+        }
     }
     public void SetVillage()
     {

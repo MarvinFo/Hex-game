@@ -21,10 +21,6 @@ public class pathController : GameTileController
                 Instantiate(villageTile, (hit.point - transform.position)*9/10 + transform.position, Quaternion.identity);
         }
     }
-    public void NotifyPicked()
-    {
-
-    }
     // Update is called once per frame
     void Update()
     {

@@ -310,11 +310,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   path: {fileID: 6732925048286287788, guid: 2cc5bdbf061e429418950bad1e96d2db, type: 3}
+  villageTilesNotify:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   hexTileLayer:
     serializedVersion: 2
     m_Bits: 64
+  lifetime: 2
   fieldNumber: 0
   num: 
+  isDesert: 0
+  RollIndication: {fileID: 5686376557095558008, guid: c725f3357879a104d8eb2f14a2b99fad, type: 3}
 --- !u!64 &320052420176750692
 MeshCollider:
   m_ObjectHideFlags: 0

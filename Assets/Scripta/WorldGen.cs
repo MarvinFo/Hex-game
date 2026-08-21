@@ -7,12 +7,14 @@ using UnityEngine;
 public class WorldGen : MonoBehaviour
 {
     [SerializeField] private StandardWorldGenScriptableObject worldGenOption;
+    public DataManager dataManager;
     private Dictionary<(int,int,int), TileController> fields;
     public Material oceanMaterial;
     private int fieldSize;
     public (int,int,int) startIndex = (2,-2,0);
     public GameObject tile;
     private int numberOfTiles;
+    private int[] biomes;
     [SerializeField] Material[] materials;
     void Start()
     {
@@ -20,12 +22,15 @@ public class WorldGen : MonoBehaviour
     }
     public (Dictionary<(int, int, int), TileController>,Dictionary<int,HashSet<TileController>>) StartWorldGen()
     {
+        biomes = new int[worldGenOption.biomes.Length];
+        Array.Copy(worldGenOption.biomes, biomes, worldGenOption.biomes.Length);
         fields = new Dictionary<(int, int, int), TileController>();
         numberOfTiles = worldGenOption.fieldSize;
         for (int i = (worldGenOption.fieldSize - 1) / 2; i > 0; i--)
         {
-            numberOfTiles += ((5 - i) * 2);
+            numberOfTiles += ((worldGenOption.fieldSize - i) * 2);
         }
+        Debug.LogWarning(numberOfTiles);
         GameObject spawnedTile;
         this.fieldSize = worldGenOption.fieldSize / 2 + 1;
         ArrayList fieldsToSpawn = new ArrayList();
@@ -68,12 +73,13 @@ public class WorldGen : MonoBehaviour
             }
             else
             {
-                Material material = RandomBiomePicker(0);
-                if (material.name.Equals("Desert"))
+                (Material, GameRessourceMaterials.MaterialEnum material) biome = RandomBiomePicker(0);
+                if (biome.Item1.name.Equals("Desert"))
                 {
                     spawnedTile.GetComponent<TileController>().isDesert = true;
                 }
-                spawnedTile.GetComponent<MeshRenderer>().material = material;
+                spawnedTile.GetComponent<TileController>().SetGameMaterial(biome.Item2);
+                spawnedTile.GetComponent<MeshRenderer>().material = biome.Item1;
             }
             spawnedTile.GetComponent<TileController>().number = (fiel.Item1, fiel.Item2, fiel.Item3);
             fields.Add((fiel.Item1, fiel.Item2, fiel.Item3), spawnedTile.GetComponent<TileController>());
@@ -91,20 +97,19 @@ public class WorldGen : MonoBehaviour
         Dictionary<int, HashSet<TileController>> fieldsWithNumbers = FieldNumberGen();
         return (fields,fieldsWithNumbers);
     }
-    private Material RandomBiomePicker(int recursionLevel)
+    private (Material, GameRessourceMaterials.MaterialEnum material) RandomBiomePicker(int recursionLevel)
     {
-        int[] biomes = worldGenOption.biomes;
         if (recursionLevel > numberOfTiles )
         {
-            return materials[5];
+            return dataManager.getDessert();
         }
-        int tempRand = UnityEngine.Random.Range(0,6);    
-        if (biomes[tempRand] == 0)
+        int tempRand = UnityEngine.Random.Range(0,6);
+        (Material, GameRessourceMaterials.MaterialEnum material) biome = dataManager.getBiome(tempRand);
+        if (biome.Item1 == null)
         {
             return RandomBiomePicker(recursionLevel+1);
         }
-        biomes[tempRand]--;
-        return materials[tempRand];
+        return biome;
     }  
     private Dictionary<int, HashSet<TileController>> FieldNumberGen()
     {

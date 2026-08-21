@@ -7,13 +7,16 @@ public class TileController : GameTileController
     [SerializeField] private GameObject path;
     [SerializeField] private VillageTileController[] villageTilesNotify = new VillageTileController[6];
     [SerializeField] private LayerMask hexTileLayer;
+    [SerializeField] private float lifetime = 2f;
     public (int, int, int) number;
     public int fieldNumber;
     private GameObject[] paths = new GameObject[6];
     public string num;
     private (int, int, int) coordinates;
     public bool isDesert = false;
-    private int material;
+    private GameRessourceMaterials.MaterialEnum material;
+    public GameObject RollIndication;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -58,9 +61,9 @@ public class TileController : GameTileController
 
     public void NotifyPicked()
     {
-        foreach (GameObject path in paths)
+        foreach (VillageTileController village in villageTilesNotify)
         {
-            path.GetComponent<pathController>().NotifyPicked();
+            village.NotifyPicked(material);
         }
     }
     public void SetCoordinates((int, int, int) coord)
@@ -71,9 +74,9 @@ public class TileController : GameTileController
     {
         return coordinates;
     }
-    public void IndicateSelected(Material hoverMaterial)
+    public void IndicateSelected()
     {
-        GetComponent<MeshRenderer>().material = hoverMaterial;
+        Destroy(Instantiate(RollIndication, gameObject.transform.position, gameObject.transform.rotation), lifetime);
     }
     public void SetNumber(int number)
     {
@@ -90,12 +93,9 @@ public class TileController : GameTileController
             }
         }
     }
-    public int GetMaterial()
+
+    public void SetGameMaterial(GameRessourceMaterials.MaterialEnum material)
     {
-        return material;
-    }
-    public VillageTileController[] villages()
-    {
-        return villageTilesNotify;
+        this.material = material;
     }
 }

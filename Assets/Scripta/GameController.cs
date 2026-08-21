@@ -24,7 +24,16 @@ public class GameController : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Escape))
         {
-            //worldController.GetComponent<WorldController>().RollField(8); 
+            int diceRoll = UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7);
+            if (diceRoll == 7)
+            {
+
+            }
+            else
+            {
+                worldController.GetComponent<WorldController>().RollField(diceRoll);
+            }
+             
         }  
     }
     /*private IEnumerator GameCycle()
@@ -35,4 +44,10 @@ public class GameController : MonoBehaviour
     {
         yield return new WaitUntil();
     }*/
+
+    public void DistributeAssetsToPlayers(int playerID)
+    {
+        Debug.Log("Yippeeee");
+    }
+
 }
