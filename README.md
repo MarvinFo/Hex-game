@@ -1,6 +1,6 @@
-# Some game similar to The Settlers of Catan
+# Hex Game
 
-It's an unfinished Unity project.
+An unfinished hex-based strategy board game prototype built with Unity and C#, inspired by classic resource-trading board games like *The Settlers of Catan*.
 
 Implemented features:
 * Play field generation, terrain hexes and numbering. 
